@@ -120,7 +120,9 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
     thread threadLeft(&Frame::ExtractORB,this,0,imLeft,0,0);
+    pthread_setname_np(threadLeft.native_handle(), "ORBLeft");
     thread threadRight(&Frame::ExtractORB,this,1,imRight,0,0);
+    pthread_setname_np(threadRight.native_handle(), "ORBRight");
     threadLeft.join();
     threadRight.join();
 #ifdef REGISTER_TIMES
@@ -1057,7 +1059,9 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
     thread threadLeft(&Frame::ExtractORB,this,0,imLeft,static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera)->mvLappingArea[1]);
+    pthread_setname_np(threadLeft.native_handle(), "ORBLeft");
     thread threadRight(&Frame::ExtractORB,this,1,imRight,static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[0],static_cast<KannalaBrandt8*>(mpCamera2)->mvLappingArea[1]);
+    pthread_setname_np(threadRight.native_handle(), "ORBRight");
     threadLeft.join();
     threadRight.join();
 #ifdef REGISTER_TIMES

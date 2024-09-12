@@ -40,16 +40,17 @@ int main(int argc, char **argv)
 
   rclcpp::init(argc, argv);
 
-  ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::IMU_MONOCULAR,true);
+  ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::IMU_MONOCULAR,false);
   auto mono_inertial_node = std::make_shared<MonoInertialNode>(&SLAM, bEqual);
 
-  rclcpp::spin(mono_inertial_node);
+  rclcpp::executors::MultiThreadedExecutor executor;
+  executor.add_node(mono_inertial_node);
+  executor.spin();
 
+  SLAM.Shutdown();
+  SLAM.SaveTrajectoryTUM("CameraTrajectory.tum");
+  SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.tum");
   rclcpp::shutdown();
 
   return 0;
 }
-
-
-
-

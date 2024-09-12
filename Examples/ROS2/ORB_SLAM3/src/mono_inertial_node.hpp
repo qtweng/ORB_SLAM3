@@ -13,7 +13,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include<sensor_msgs/msg/imu.hpp>
 #include<sensor_msgs/msg/image.hpp>
-
+#include "geometry_msgs/msg/pose_stamped.hpp"
 #include"../../../include/System.h"
 #include"../include/ImuTypes.h"
 
@@ -26,8 +26,9 @@ public:
     void GrabImu(const sensor_msgs::msg::Imu::ConstSharedPtr imu_msg);
     void GrabImage(const sensor_msgs::msg::Image::ConstSharedPtr img_msg);
     void SyncWithImu();
-    cv::Mat GetImage(const sensor_msgs::msg::Image::ConstSharedPtr img_msg);
+    void GetImage(const sensor_msgs::msg::Image::ConstSharedPtr img_msg, cv::Mat* output_image);
     double GetSeconds(builtin_interfaces::msg::Time stamp);
+    geometry_msgs::msg::PoseStamped ConvertToRosPose(const Sophus::SE3f &pose, const std::string &frame_id);
 
     queue<sensor_msgs::msg::Imu::ConstSharedPtr> imuBuf;
     queue<sensor_msgs::msg::Image::ConstSharedPtr> img0Buf;
@@ -41,8 +42,13 @@ public:
     
 
 private:
+    std::shared_ptr<rclcpp::CallbackGroup> imu_callback_group_;
+    std::shared_ptr<rclcpp::CallbackGroup> image_callback_group_;
+
     rclcpp::Subscription<sensor_msgs::msg::Imu>::ConstSharedPtr sub_imu_;
     rclcpp::Subscription<sensor_msgs::msg::Image>::ConstSharedPtr sub_img0_;
+
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_pose_;
 };
 
 #endif
